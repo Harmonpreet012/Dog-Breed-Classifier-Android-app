@@ -52,8 +52,9 @@ public class MainActivity extends AppCompatActivity {
     private List<String> labels;
     ImageView imageView;
     Uri imageuri;
-    Button buclassify;
+    Button buclassify, showinfo;
     TextView classitext;
+    String Breed;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +64,8 @@ public class MainActivity extends AppCompatActivity {
         imageView=(ImageView)findViewById(R.id.imageView);
         buclassify=(Button)findViewById(R.id.classify);
         classitext=(TextView)findViewById(R.id.classifytext);
+        showinfo=(Button)findViewById(R.id.showinfobutton);
+        showinfo.setEnabled(false);
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -100,6 +103,17 @@ public class MainActivity extends AppCompatActivity {
 
                 tflite.run(inputImageBuffer.getBuffer(),outputProbabilityBuffer.getBuffer().rewind());
                 showresult();
+                showinfo.setEnabled(true);
+                showinfo.setOnClickListener(new Button.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent=new Intent(getBaseContext(),  showinfoActivity.class);
+                        intent.putExtra("dogBreed", Breed);
+                        startActivity(intent);
+                    }
+                });
+
+
             }
         });
     }
@@ -146,7 +160,11 @@ public class MainActivity extends AppCompatActivity {
 
         for (Map.Entry<String, Float> entry : labeledProbability.entrySet()) {
             if (entry.getValue()==maxValueInMap) {
-                classitext.setText(entry.getKey()+" with Prob: "+entry.getValue()*100);
+                {
+                    Breed=entry.getKey();
+                    classitext.setText("Identified breed:  "+entry.getKey()+"\nwith Probability: "+entry.getValue()*100+ "%");
+                }
+                
             }
         }
     }
