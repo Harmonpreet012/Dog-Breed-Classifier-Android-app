@@ -36,7 +36,8 @@ public class showinfoActivity extends AppCompatActivity{
         setContentView(R.layout.activity_showinfo);
         Intent intent = getIntent();
         final String breedName = intent.getStringExtra("dogBreed");
-        url ="https://api.thedogapi.com/v1/breeds?attach_breed="+breedName+"&limit=1" ;
+        url ="https://api.thedogapi.com/v1/breeds/search?q="+breedName ;
+        Log.e("url= ", url);
         pg=new ProgressDialog(this);
         pg.setMessage("Loading");
 
@@ -48,64 +49,52 @@ public class showinfoActivity extends AppCompatActivity{
         bred_for=findViewById(R.id.textViewBred_for);
         life_span=findViewById(R.id.textViewLife);
         temperament =findViewById(R.id.textViewtemp);
-        runThread();
-    }
+        final RequestQueue requestQueue = Volley.newRequestQueue(getBaseContext());
+        final JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(
+                Request.Method.GET,
+                url,
+                null,
+                new Response.Listener<JSONArray>() {
 
-    private void runThread()
-    {
-        new Thread()
-        {
-            public void run()
-            {
-                runOnUiThread(new Runnable() {
                     @Override
-                    public void run() {
-                        final RequestQueue requestQueue = Volley.newRequestQueue(getBaseContext());
-                        final JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(
-                                Request.Method.GET,
-                                url,
-                                null,
-                                new Response.Listener<JSONArray>() {
-
-                                    @Override
-                                    public void onResponse(JSONArray response) {
-                                        try {
-                                            jsonObject=response.getJSONObject(0);
+                    public void onResponse(JSONArray response) {
+                        try {
+                            jsonObject=response.getJSONObject(0);
 
 
-                                            Log.e("CL: ", jsonObject.toString());
-                                            pg.dismiss();
-                                            try {
-                                                Thread.sleep(2000);
-                                            }
-                                            catch(InterruptedException e)
-                                            {
-                                                e.printStackTrace();
-                                            }
-                                            life_span.setText(jsonObject.get("life_span").toString());
-                                            weight.setText(jsonObject.get("weight").toString());
-                                            height.setText(jsonObject.get("height").toString());
-                                            temperament.setText(jsonObject.get("temperament").toString());
-                                            origin.setText(jsonObject.get("origin").toString());
-                                        }
-                                        catch (JSONException  e) {
-                                            e.printStackTrace();
-                                        }
-                                    }
+                            Log.e("CL: ", jsonObject.toString());
+                            pg.dismiss();
+                            try {
+                                Thread.sleep(2000);
+                            }
+                            catch(InterruptedException e)
+                            {
+                                e.printStackTrace();
+                            }
+                            name.setText(jsonObject.get("name").toString());
+                            life_span.setText(jsonObject.get("life_span").toString());
+                            weight.setText(jsonObject.get("weight").toString());
+                            height.setText(jsonObject.get("height").toString());
+                            bred_for.setText(jsonObject.get("bred_for").toString());
+                            temperament.setText(jsonObject.get("temperament").toString());
 
-                                },
-                                new Response.ErrorListener() {
-                                    @Override
-                                    public void onErrorResponse(VolleyError error) {
-                                        Log.e("Custom Error :", error.toString());
-                                    }
-                                }
-                        );
-                        requestQueue.add(jsonArrayRequest);
+                        }
+                        catch (JSONException  e) {
+                            e.printStackTrace();
+                        }
                     }
-                });
-            }
-        }.start();
+
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e("Custom Error :", error.toString());
+                    }
+                }
+        );
+        requestQueue.add(jsonArrayRequest);
     }
+
+
 
 }
