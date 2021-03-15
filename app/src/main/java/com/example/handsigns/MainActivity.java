@@ -37,8 +37,8 @@ import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
-
-    protected Interpreter tflite;private MappedByteBuffer tfliteModel;
+    protected Interpreter tflite;
+    private MappedByteBuffer tfliteModel;
     private TensorImage inputImageBuffer;
     private  int imageSizeX;
     private  int imageSizeY;
@@ -85,7 +85,8 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 int imageTensorIndex = 0;
-                int[] imageShape = tflite.getInputTensor(imageTensorIndex).shape(); // {1, height, width, 3}
+                int[] imageShape; // {1, height, width, 3}
+                imageShape = tflite.getInputTensor(imageTensorIndex).shape();
                 imageSizeY = imageShape[1];
                 imageSizeX = imageShape[2];
                 DataType imageDataType = tflite.getInputTensor(imageTensorIndex).dataType();
